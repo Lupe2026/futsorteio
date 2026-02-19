@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FutSorteio Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+
+    <style>
+        :root { --azul: #3498db; --amarelo: #f1c40f; --dark: #2c3e50; --danger: #e74c3c; --success: #2ecc71; --gray: #95a5a6; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #dfe6e9; overflow-x: hidden; }
+        
+        /* TELA DE SPLASH */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10000; transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        #splash-screen img { width: 180px; margin-bottom: 25px; animation: pulse 2s infinite; }
+        #splash-screen h2 { color: white; font-weight: 300; letter-spacing: 3px; margin: 0; }
+        .splash-hidden { opacity: 0; visibility: hidden; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* INTERFACE GERAL */
+        .container { padding: 15px; max-width: 900px; margin: auto; }
+        .hidden { display: none; }
+        h2 { text-align: center; color: var(--dark); margin-top: 10px; }
+        
+        /* BOTOES */
+        button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: var(--success); color: white; width: 100%; padding: 12px; margin: 10px 0; }
+        .btn-draw { background: var(--dark); color: white; width: 100%; height: 55px; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-back { background: #636e72; color: white; padding: 8px 15px; margin-bottom: 20px; }
+        .btn-clear { background: var(--danger); color: white; padding: 8px 15px; font-size: 12px; }
+
+        /* HEADER TELA 1 */
+        .header-setup { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+
+        /* LISTA JOGADORES */
+        .player-item { display: flex; align-items: center; background: white; margin-bottom: 8px; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .player-item.is-seed { border-left: 6px solid var(--danger); }
+        .player-item input { flex-grow: 1; border: 1px solid #ddd; padding: 10px; border-radius: 4px; font-size: 16px; margin-right: 10px; }
+
+        /* TELA 2: CONFRONTOS */
+        .match-pair { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 30px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 15px; }
+        .match-label { width: 100%; text-align: center; font-weight: bold; color: #636e72; margin-bottom: 5px; }
+        .team-card { flex: 1; min-width: 300px; background: white; border-radius: 12px; padding: 15px; border-top: 15px solid #bdc3c7; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .team-azul { border-top-color: var(--azul); }
+        .team-amarelo { border-top-color: var(--amarelo); }
+        .handle { height: 25px; cursor: move; background: #f1f1f1; border-radius: 4px; margin-bottom: 10px; text-align: center; font-size: 11px; color: #999; line-height: 25px; }
+        .slots-container { min-height: 100px; padding: 5px; }
+        .slot { background: #fff; border: 1px solid #eee; margin-bottom: 5px; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; cursor: grab; }
+        .dragging { opacity: 0.3; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <img src="ic_fmv.png" alt="Logo">
+        <h2>SORTEANDO TIMES</h2>
+    </div>
+
+    <div id="screen-setup" class="container">
+        <div class="header-setup">
+            <h2 style="margin:0">⚽ Escalação</h2>
+            <button class="btn-clear" onclick="clearAllPlayers()">LIMPAR TUDO</button>
+        </div>
+
+        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <label>Jogadores por time:</label>
+            <select id="players-per-team" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd;">
+                <option value="4">4 Jogadores</option>
+                <option value="5" selected>5 Jogadores</option>
+                <option value="6">6 Jogadores</option>
+                <option value="7">7 Jogadores</option>
+                <option value="10">10 Jogadores</option>
+            </select>
+        </div>
+
+        <div id="player-list"></div>
+        
+        <button class="btn-add" onclick="addPlayerRow()">+ Adicionar Jogador</button>
+        <button class="btn-draw" onclick="drawTeams()">GERAR CONFRONTOS</button>
+    </div>
+
+    <div id="screen-result" class="container hidden">
+        <button class="btn-back" onclick="showScreen('setup')">← Voltar à Lista</button>
+        <div id="matches-wrapper"></div>
+        <button class="btn-add" onclick="addNewPlayerToResult()">+ Adicionar Jogador Extra</button>
+    </div>
+
+    <script>
+        // --- INICIALIZAÇÃO E SPLASH ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('splash-hidden');
+            }, 4000);
+            loadFromLocal();
+        });
+
+        // --- PERSISTÊNCIA (localStorage) ---
+        function saveToLocal() {
+            const data = Array.from(document.querySelectorAll('.player-item')).map(item => ({
+                name: item.querySelector('input').value,
+                isSeed: item.querySelector('input[type="checkbox"]').checked
+            })).filter(p => p.name.trim());
+            localStorage.setItem('futebol_players', JSON.stringify(data));
+        }
+
+        function loadFromLocal() {
+            const saved = JSON.parse(localStorage.getItem('futebol_players') || '[]');
+            const list = document.getElementById('player-list');
+            list.innerHTML = '';
+            if(saved.length > 0) {
+                saved.forEach(p => addPlayerRow(p.name, p.isSeed));
+            } else {
+                for(let i=0; i<8; i++) addPlayerRow();
+            }
+        }
+
+        // --- FUNÇÕES DE LIMPEZA E ADIÇÃO ---
+        function clearAllPlayers() {
+            if(confirm("Tem certeza que deseja apagar todos os nomes da lista?")) {
+                localStorage.removeItem('futebol_players');
+                loadFromLocal();
+            }
+        }
+
+        function addPlayerRow(name = "", isSeed = false) {
+            const div = document.createElement('div');
+            div.className = `player-item ${isSeed ? 'is-seed' : ''}`;
+            div.innerHTML = `
+                <input type="text" placeholder="Nome" value="${name}" oninput="saveToLocal()">
+                <label style="font-size: 12px;"><input type="checkbox" ${isSeed ? 'checked' : ''} onchange="toggleSeed(this); saveToLocal()"> Cabeça</label>
+                <button onclick="this.parentElement.remove(); saveToLocal()" style="margin-left:10px; background:none; color:red; font-size:18px;">✕</button>
+            `;
+            document.getElementById('player-list').appendChild(div);
+        }
+
+        function toggleSeed(cb) { cb.closest('.player-item').classList.toggle('is-seed', cb.checked); }
+
+        function showScreen(s) {
+            document.getElementById('screen-setup').classList.toggle('hidden', s !== 'setup');
+            document.getElementById('screen-result').classList.toggle('hidden', s !== 'result');
+            window.scrollTo(0,0);
+        }
+
+        // --- LÓGICA DO SORTEIO ---
+        function drawTeams() {
+            const players = Array.from(document.querySelectorAll('.player-item'))
+                .map(item => ({ 
+                    name: item.querySelector('input').value, 
+                    isSeed: item.querySelector('input[type="checkbox"]').checked 
+                })).filter(p => p.name.trim());
+
+            if(players.length === 0) return alert("Insira os nomes dos jogadores primeiro!");
+
+            const size = parseInt(document.getElementById('players-per-team').value);
+            const totalTeams = Math.ceil(players.length / size);
+            const teams = Array.from({ length: totalTeams }, () => []);
+
+            const seeds = players.filter(p => p.isSeed);
+            const commons = players.filter(p => !p.isSeed);
+
+            // Cabeças de chave distribuídos primeiro
+            seeds.forEach((p, i) => teams[i % totalTeams].push(p.name));
+            
+            // Restante por ordem de chegada (commons)
+            let t = 0;
+            commons.forEach(p => {
+                while(teams[t] && teams[t].length >= size) t++;
+                if(teams[t]) teams[t].push(p.name);
+                else if (t >= totalTeams) teams[totalTeams - 1].push(p.name);
+            });
+
+            renderMatches(teams);
+            showScreen('result');
+        }
+
+        function renderMatches(teams) {
+            const wrapper = document.getElementById('matches-wrapper');
+            wrapper.innerHTML = '';
+            for (let i = 0; i < teams.length; i += 2) {
+                const matchDiv = document.createElement('div');
+                matchDiv.className = 'match-pair';
+                matchDiv.innerHTML = `<div class="match-label">Confronto ${Math.floor(i/2) + 1}</div>`;
+                matchDiv.appendChild(createTeamCard(teams[i], i + 1));
+                if (teams[i+1]) matchDiv.appendChild(createTeamCard(teams[i+1], i + 2));
+                wrapper.appendChild(matchDiv);
+            }
+        }
+
+        function createTeamCard(players, num) {
+            const card = document.createElement('div');
+            card.className = 'team-card';
+            card.draggable = true;
+            card.addEventListener('dragstart', dragTeam);
+            card.addEventListener('dragover', allowDrop);
+            card.addEventListener('drop', dropTeam);
+            card.innerHTML = `
+                <div class="handle">::: MOVER TIME :::</div>
+                <select onchange="this.closest('.team-card').className = 'team-card team-' + this.value" style="width:100%; margin-bottom:10px; padding:5px;">
+                    <option value="">Escolher Cor</option>
+                    <option value="azul">Azul</option>
+                    <option value="amarelo">Amarelo</option>
+                </select>
+                <h4 contenteditable="true" style="margin:5px 0">Time ${num}</h4>
+                <div class="slots-container" ondrop="dropPlayer(event)" ondragover="allowDrop(event)">
+                    ${players.map(p => `<div class="slot" draggable="true" ondragstart="dragPlayer(event)">
+                        <span class="p-name">${p}</span>
+                        <div class="slot-actions">
+                            <button onclick="editP(this)">✎</button>
+                            <button onclick="this.closest('.slot').remove()" style="color:red">✕</button>
+                        </div>
+                    </div>`).join('')}
+                </div>`;
+            return card;
+        }
+
+        // --- DRAG AND DROP E EDIÇÃO ---
+        let draggedItem = null;
+        let draggedType = '';
+        function allowDrop(ev) { ev.preventDefault(); }
+        function dragPlayer(ev) { draggedItem = ev.target; draggedType = 'player'; ev.stopPropagation(); }
+        function dropPlayer(ev) {
+            ev.preventDefault();
+            if (draggedType === 'player') ev.target.closest('.slots-container').appendChild(draggedItem);
+        }
+        function dragTeam(ev) { if(ev.target.className.includes('team-card')) { draggedItem = ev.target; draggedType = 'team'; ev.target.classList.add('dragging'); } }
+        function dropTeam(ev) {
+            ev.preventDefault();
+            if (draggedType === 'team') {
+                const target = ev.target.closest('.team-card');
+                if(target && target !== draggedItem) target.parentNode.insertBefore(draggedItem, target.nextSibling);
+            }
+            document.querySelectorAll('.team-card').forEach(c => c.classList.remove('dragging'));
+        }
+        function editP(btn) {
+            const span = btn.closest('.slot').querySelector('.p-name');
+            const n = prompt("Editar nome do jogador:", span.innerText);
+            if(n) span.innerText = n;
+        }
+        function addNewPlayerToResult() {
+            const n = prompt("Nome do Jogador Extra:");
+            if(n) {
+                const firstContainer = document.querySelector('.slots-container');
+                firstContainer.insertAdjacentHTML('beforeend', `<div class="slot" draggable="true" ondragstart="dragPlayer(event)"><span class="p-name">${n}</span><div class="slot-actions"><button onclick="editP(this)">✎</button><button onclick="this.closest('.slot').remove()" style="color:red">✕</button></div></div>`);
+            }
+        }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
