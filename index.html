@@ -149,35 +149,87 @@
 
         // --- LÓGICA DO SORTEIO ---
         function drawTeams() {
-            const players = Array.from(document.querySelectorAll('.player-item'))
-                .map(item => ({ 
-                    name: item.querySelector('input').value, 
-                    isSeed: item.querySelector('input[type="checkbox"]').checked 
-                })).filter(p => p.name.trim());
+    const allPlayers = Array.from(document.querySelectorAll('.player-item'))
+        .map(item => ({ 
+            name: item.querySelector('input').value, 
+            isSeed: item.querySelector('input[type="checkbox"]').checked 
+        })).filter(p => p.name.trim());
 
-            if(players.length === 0) return alert("Insira os nomes dos jogadores primeiro!");
+    if(allPlayers.length === 0) return alert("Insira os nomes dos jogadores!");
 
-            const size = parseInt(document.getElementById('players-per-team').value);
-            const totalTeams = Math.ceil(players.length / size);
-            const teams = Array.from({ length: totalTeams }, () => []);
+    const size = parseInt(document.getElementById('players-per-team').value);
+    const totalTeams = Math.ceil(allPlayers.length / size);
+    const teams = Array.from({ length: totalTeams }, () => []);
 
-            const seeds = players.filter(p => p.isSeed);
-            const commons = players.filter(p => !p.isSeed);
+    // 1. Separar Cabeças de Chave e Comuns
+    const seeds = allPlayers.filter(p => p.isSeed);
+    const commons = allPlayers.filter(p => !p.isSeed);
 
-            // Cabeças de chave distribuídos primeiro
-            seeds.forEach((p, i) => teams[i % totalTeams].push(p.name));
-            
-            // Restante por ordem de chegada (commons)
-            let t = 0;
-            commons.forEach(p => {
-                while(teams[t] && teams[t].length >= size) t++;
-                if(teams[t]) teams[t].push(p.name);
-                else if (t >= totalTeams) teams[totalTeams - 1].push(p.name);
-            });
-
-            renderMatches(teams);
-            showScreen('result');
+    // Função para embaralhar
+    const shuffle = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+        return array;
+    };
+
+    // 2. Distribuir os Cabeças de Chave primeiro (Sempre prioridade)
+    // Eles são sorteados entre si e espalhados pelos times
+    const shuffledSeeds = shuffle(seeds);
+    shuffledSeeds.forEach((p, i) => {
+        teams[i % totalTeams].push(p.name);
+    });
+
+    // 3. Identificar quantas vagas faltam nos 2 primeiros times
+    // (Pois os cabeças de chave já ocuparam algumas)
+    let firstTeamSlots = size - teams[0].length;
+    let secondTeamSlots = size - teams[1].length;
+    if (secondTeamSlots < 0) secondTeamSlots = 0; // Prevenção
+
+    // 4. Pote do Primeiro Jogo: Pega os primeiros "comuns" da lista para completar os 2 times
+    const totalNeededForFirstMatch = firstTeamSlots + secondTeamSlots;
+    const playersForFirstMatch = commons.slice(0, totalNeededForFirstMatch);
+    const remainingCommons = commons.slice(totalNeededForFirstMatch);
+
+    // 5. Sorteia e completa os dois primeiros times
+    const shuffledFirstMatch = shuffle(playersForFirstMatch);
+    shuffledFirstMatch.forEach(nameObj => {
+        if (teams[0].length < size) {
+            teams[0].push(nameObj.name);
+        } else {
+            teams[1].push(nameObj.name);
+        }
+    });
+
+    // 6. Sorteia o restante e preenche os outros times (Time 3, 4...)
+    const shuffledRemaining = shuffle(remainingCommons);
+    shuffledRemaining.forEach((p, i) => {
+        // Encontra o próximo time com vaga disponível a partir do Time 3 (índice 2)
+        let t = (totalTeams > 2) ? 2 : 0;
+        let found = false;
+        
+        for (let j = t; j < totalTeams; j++) {
+            if (teams[j].length < size) {
+                teams[j].push(p.name);
+                found = true;
+                break;
+            }
+        }
+        // Se todos os times a partir do 3 estiverem cheios, volta para o 1 e 2
+        if (!found) {
+            for (let j = 0; j < totalTeams; j++) {
+                if (teams[j].length < size) {
+                    teams[j].push(p.name);
+                    break;
+                }
+            }
+        }
+    });
+
+    renderMatches(teams);
+    showScreen('result');
+}
 
         function renderMatches(teams) {
             const wrapper = document.getElementById('matches-wrapper');
@@ -254,4 +306,5 @@
         }
     </script>
 </body>
+
 </html>
