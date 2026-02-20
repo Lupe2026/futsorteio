@@ -25,11 +25,12 @@
         .team-card { background: white; border-radius: 10px; padding: 10px; border-top: 8px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; transition: 0.3s; }
         .team-card.selected { border: 3px solid var(--azul); transform: scale(1.02); z-index: 10; }
         
-        .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer; }
-        .team-header h4 { margin: 0; font-size: 14px; }
+        .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer; border-radius: 5px; padding: 2px; }
+        .team-header:active { background: #eee; }
+        .team-header h4 { margin: 0; font-size: 13px; }
 
         .color-picker { display: flex; gap: 8px; margin-bottom: 10px; justify-content: center; }
-        .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; }
+        .color-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #ddd; cursor: pointer; }
         .color-btn.none { background: #eee; }
         .color-btn.azul { background: var(--azul); }
         .color-btn.amarelo { background: var(--amarelo); }
@@ -40,7 +41,10 @@
         .team-controls { display: flex; gap: 5px; margin-bottom: 10px; }
         .btn-action { background: #eee; border: 1px solid #ddd; padding: 5px; border-radius: 4px; font-size: 12px; flex: 1; cursor: pointer; }
 
-        .slot { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #f9f9f9; border: 1px solid #eee; margin-bottom: 4px; border-radius: 5px; font-size: 13px; }
+        /* Estilo do Jogador e Seleção */
+        .slot { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f9f9f9; border: 1px solid #eee; margin-bottom: 4px; border-radius: 5px; font-size: 13px; transition: 0.2s; cursor: pointer; }
+        .slot.selected-player { background: var(--azul) !important; color: white; transform: translateX(5px); }
+        .slot-actions { display: flex; gap: 5px; }
         .slot-actions button { background: none; border: none; padding: 2px 5px; font-size: 14px; cursor: pointer; }
 
         button { cursor: pointer; font-weight: bold; border-radius: 6px; border: none; }
@@ -91,6 +95,7 @@
     <script>
     let globalTeams = [];
     let selectedTeamIndex = null;
+    let selectedPlayerInfo = null; // { teamIdx, playerIdx }
 
     window.addEventListener('load', () => {
         setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 3000);
@@ -119,7 +124,7 @@
         div.innerHTML = `
             <input type="text" placeholder="Nome" value="${name}" oninput="saveToLocal()">
             <label><input type="checkbox" ${isSeed ? 'checked' : ''} onchange="this.closest('.player-item').classList.toggle('is-seed', this.checked); saveToLocal()"> ⭐</label>
-            <button onclick="this.parentElement.remove(); saveToLocal()" style="color:red; margin-left:10px; background:none; font-size:18px;">✕</button>
+            <button onclick="this.parentElement.remove(); saveToLocal()" style="color:red; background:none; margin-left:10px; font-size:18px;">✕</button>
         `;
         document.getElementById('player-list').appendChild(div);
     }
@@ -130,46 +135,6 @@
         window.scrollTo(0,0);
     }
 
-    function drawTeams() {
-        const players = Array.from(document.querySelectorAll('.player-item'))
-            .map(item => ({ name: item.querySelector('input').value, isSeed: item.querySelector('input[type="checkbox"]').checked }))
-            .filter(p => p.name.trim());
-
-        if(players.length === 0) return alert("Insira os nomes!");
-
-        const size = parseInt(document.getElementById('players-per-team').value);
-        const totalTeams = Math.ceil(players.length / size);
-        
-        globalTeams = Array.from({ length: totalTeams }, () => {
-            let arr = [];
-            arr.color = "";
-            return arr;
-        });
-
-        const seeds = shuffle(players.filter(p => p.isSeed));
-        const commons = shuffle(players.filter(p => !p.isSeed));
-        
-        seeds.forEach((p, i) => globalTeams[i % totalTeams].push(p.name));
-
-        const p1Needed = (size * 2) - (globalTeams[0].length + (globalTeams[1] ? globalTeams[1].length : 0));
-        const p1 = commons.slice(0, Math.max(0, p1Needed));
-        const p2 = commons.slice(Math.max(0, p1Needed));
-
-        p1.forEach(p => {
-            if(globalTeams[0].length < size) globalTeams[0].push(p.name);
-            else if(globalTeams[1]) globalTeams[1].push(p.name);
-        });
-
-        p2.forEach(p => {
-            for(let j = (totalTeams > 2 ? 2 : 0); j < totalTeams; j++) {
-                if(globalTeams[j].length < size) { globalTeams[j].push(p.name); break; }
-            }
-        });
-
-        renderMatches();
-        showScreen('result');
-    }
-
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -178,11 +143,38 @@
         return array;
     }
 
+    function drawTeams() {
+        const players = Array.from(document.querySelectorAll('.player-item'))
+            .map(item => ({ name: item.querySelector('input').value, isSeed: item.querySelector('input[type="checkbox"]').checked }))
+            .filter(p => p.name.trim());
+
+        if(players.length === 0) return alert("Insira os nomes!");
+        const size = parseInt(document.getElementById('players-per-team').value);
+        const totalTeams = Math.ceil(players.length / size);
+        
+        globalTeams = Array.from({ length: totalTeams }, () => {
+            let arr = []; arr.color = ""; return arr;
+        });
+
+        const seeds = shuffle(players.filter(p => p.isSeed));
+        const commons = shuffle(players.filter(p => !p.isSeed));
+        seeds.forEach((p, i) => globalTeams[i % totalTeams].push(p.name));
+        
+        let pool = commons.map(c => c.name);
+        globalTeams.forEach(team => {
+            while(team.length < size && pool.length > 0) {
+                team.push(pool.shift());
+            }
+        });
+
+        renderMatches();
+        showScreen('result');
+    }
+
     function renderMatches() {
         const wrapper = document.getElementById('matches-wrapper');
         wrapper.innerHTML = '';
-        selectedTeamIndex = null;
-
+        
         wrapper.innerHTML += `<div class="zone-title">🏟️ Partida Atual</div>`;
         const matchDiv = document.createElement('div');
         matchDiv.className = 'match-pair';
@@ -203,7 +195,7 @@
         const card = document.createElement('div');
         card.className = `team-card ${selectedTeamIndex === index ? 'selected' : ''} team-${teamColor}`;
         card.innerHTML = `
-            <div class="team-header" onclick="selectTeam(${index})">
+            <div class="team-header" onclick="handleTeamClick(${index})">
                 <h4>TIME ${index + 1}</h4>
                 <span>${selectedTeamIndex === index ? '✅' : '👆'}</span>
             </div>
@@ -218,11 +210,12 @@
             </div>
             <div class="slots-container">
                 ${globalTeams[index].map((p, i) => `
-                    <div class="slot">
-                        <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-grow:1; margin-right:5px;">${p}</span>
+                    <div class="slot ${selectedPlayerInfo && selectedPlayerInfo.tIdx === index && selectedPlayerInfo.pIdx === i ? 'selected-player' : ''}" 
+                         onclick="handlePlayerClick(event, ${index}, ${i})">
+                        <span style="flex-grow:1">${p}</span>
                         <div class="slot-actions">
-                            <button onclick="editPlayerInTeam(${index}, ${i})">✎</button>
-                            <button onclick="removePlayerInTeam(${index}, ${i})" style="color:red">✕</button>
+                            <button onclick="event.stopPropagation(); editPlayerInTeam(${index}, ${i})">✎</button>
+                            <button onclick="event.stopPropagation(); removePlayerInTeam(${index}, ${i})" style="color:red">✕</button>
                         </div>
                     </div>
                 `).join('')}
@@ -231,12 +224,47 @@
         return card;
     }
 
-    function setTeamColor(index, color) {
-        globalTeams[index].color = color;
+    // --- LÓGICA DE MOVIMENTAÇÃO POR CLIQUE ---
+
+    function handlePlayerClick(event, tIdx, pIdx) {
+        event.stopPropagation();
+        
+        // Se já tem um jogador selecionado, troca/move
+        if (selectedPlayerInfo) {
+            const fromT = selectedPlayerInfo.tIdx;
+            const fromP = selectedPlayerInfo.pIdx;
+
+            // Se clicar no mesmo jogador, cancela
+            if (fromT === tIdx && fromP === pIdx) {
+                selectedPlayerInfo = null;
+            } else {
+                // Move o jogador selecionado para o novo time (troca de posição)
+                const playerToMove = globalTeams[fromT].splice(fromP, 1)[0];
+                globalTeams[tIdx].splice(pIdx, 0, playerToMove);
+                selectedPlayerInfo = null;
+            }
+        } else {
+            // Seleciona o jogador
+            selectedPlayerInfo = { tIdx, pIdx };
+            selectedTeamIndex = null; // Cancela seleção de time se houver
+        }
         renderMatches();
     }
 
-    function selectTeam(index) {
+    function handleTeamClick(index) {
+        // Se tem um jogador selecionado, move ele para o final deste time
+        if (selectedPlayerInfo) {
+            const fromT = selectedPlayerInfo.tIdx;
+            const fromP = selectedPlayerInfo.pIdx;
+            
+            const playerToMove = globalTeams[fromT].splice(fromP, 1)[0];
+            globalTeams[index].push(playerToMove);
+            selectedPlayerInfo = null;
+            renderMatches();
+            return;
+        }
+
+        // Caso contrário, usa a lógica normal de troca de times
         if (selectedTeamIndex === null) {
             selectedTeamIndex = index;
         } else {
@@ -247,6 +275,13 @@
             }
             selectedTeamIndex = null;
         }
+        renderMatches();
+    }
+
+    // --- RESTANTE DAS FUNÇÕES ---
+
+    function setTeamColor(index, color) {
+        globalTeams[index].color = color;
         renderMatches();
     }
 
@@ -267,10 +302,7 @@
 
     function removePlayerInTeam(tIdx, pIdx) {
         globalTeams[tIdx].splice(pIdx, 1);
-        // Remove o time se ele ficar vazio e não for um dos dois primeiros
-        if(globalTeams[tIdx].length === 0 && globalTeams.length > 2) {
-            globalTeams.splice(tIdx, 1);
-        }
+        if(globalTeams[tIdx].length === 0 && globalTeams.length > 2) globalTeams.splice(tIdx, 1);
         renderMatches();
     }
 
@@ -280,16 +312,10 @@
         const size = parseInt(document.getElementById('players-per-team').value);
         let added = false;
         for(let i=0; i < globalTeams.length; i++) {
-            if(globalTeams[i].length < size) {
-                globalTeams[i].push(n);
-                added = true;
-                break;
-            }
+            if(globalTeams[i].length < size) { globalTeams[i].push(n); added = true; break; }
         }
         if(!added) {
-            let newTeam = [n];
-            newTeam.color = "";
-            globalTeams.push(newTeam);
+            let newTeam = [n]; newTeam.color = ""; globalTeams.push(newTeam);
         }
         renderMatches();
     }
@@ -300,5 +326,6 @@
     </script>
 </body>
 </html>
+
 
 
