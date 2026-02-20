@@ -44,14 +44,48 @@
         .player-item input { flex-grow: 1; border: 1px solid #ddd; padding: 10px; border-radius: 4px; font-size: 16px; margin-right: 10px; }
 
         /* TELA 2: CONFRONTOS */
-        .match-pair { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 30px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 15px; }
-        .match-label { width: 100%; text-align: center; font-weight: bold; color: #636e72; margin-bottom: 5px; }
-        .team-card { flex: 1; min-width: 300px; background: white; border-radius: 12px; padding: 15px; border-top: 15px solid #bdc3c7; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* TELA 2: CONFRONTOS (Ajustado para 2 colunas no celular) */
+.match-pair { 
+    display: flex; 
+    flex-direction: row; /* Força ficar lado a lado */
+    flex-wrap: nowrap;   /* Impede de pular linha */
+    gap: 10px; 
+    justify-content: center; 
+    margin-bottom: 30px; 
+    padding: 10px; 
+    background: rgba(0,0,0,0.03); 
+    border-radius: 15px;
+    overflow-x: auto; /* Permite deslizar se a tela for muito pequena */
+}
+
+.match-label { 
+    width: 100%; 
+    text-align: center; 
+    font-weight: bold; 
+    color: #636e72; 
+    margin-bottom: 5px;
+    flex-basis: 100%; /* Garante que o rótulo ocupe a linha de cima */
+}
+
+.team-card { 
+    flex: 1; 
+    min-width: 160px; /* Diminuído para caber dois lado a lado no celular */
+    background: white; 
+    border-radius: 12px; 
+    padding: 10px; 
+    border-top: 10px solid #bdc3c7; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    font-size: 14px; /* Fonte levemente menor para caber melhor */
+}
         .team-azul { border-top-color: var(--azul); }
         .team-amarelo { border-top-color: var(--amarelo); }
         .handle { height: 25px; cursor: move; background: #f1f1f1; border-radius: 4px; margin-bottom: 10px; text-align: center; font-size: 11px; color: #999; line-height: 25px; }
         .slots-container { min-height: 100px; padding: 5px; }
-        .slot { background: #fff; border: 1px solid #eee; margin-bottom: 5px; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; cursor: grab; }
+        /* Ajuste nos slots para economizar espaço no celular */
+.slot { 
+    padding: 8px; 
+    font-size: 13px;
+}
         .dragging { opacity: 0.3; }
     </style>
 </head>
@@ -306,5 +340,5 @@
         }
     </script>
 </body>
-
 </html>
+
