@@ -8,141 +8,43 @@
     <meta name="theme-color" content="#2c3e50">
 
     <style>
-    :root { 
-        --azul: #3498db; 
-        --amarelo: #f1c40f; 
-        --dark: #2c3e50; 
-        --danger: #e74c3c; 
-        --success: #2ecc71; 
-        --gray: #95a5a6; 
-    }
-
-    body { 
-        font-family: 'Segoe UI', sans-serif; 
-        margin: 0; 
-        background: #dfe6e9; 
-        overflow-x: hidden; 
-    }
+    :root { --azul: #3498db; --amarelo: #f1c40f; --dark: #2c3e50; --danger: #e74c3c; --success: #2ecc71; }
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #dfe6e9; }
     
-    /* TELA DE SPLASH */
-    #splash-screen {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background-color: var(--dark);
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        z-index: 10000; transition: opacity 0.8s ease, visibility 0.8s;
-    }
-    #splash-screen img { width: 180px; margin-bottom: 25px; animation: pulse 2s infinite; }
-    #splash-screen h2 { color: white; font-weight: 300; letter-spacing: 3px; margin: 0; }
+    #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; transition: 0.8s; }
+    #splash-screen img { width: 150px; animation: pulse 2s infinite; }
     .splash-hidden { opacity: 0; visibility: hidden; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-    /* INTERFACE GERAL */
-    .container { padding: 15px; max-width: 900px; margin: auto; }
+    .container { padding: 15px; max-width: 600px; margin: auto; }
     .hidden { display: none; }
-    h2 { text-align: center; color: var(--dark); margin-top: 10px; }
     
-    /* BOTOES */
-    button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.2s; }
-    .btn-add { background: var(--success); color: white; width: 100%; padding: 12px; margin: 10px 0; }
-    .btn-draw { background: var(--dark); color: white; width: 100%; height: 55px; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-    .btn-back { background: #636e72; color: white; padding: 8px 15px; margin-bottom: 20px; }
-    .btn-clear { background: var(--danger); color: white; padding: 8px 15px; font-size: 12px; }
-
-    /* HEADER TELA 1 */
-    .header-setup { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-
-    /* LISTA JOGADORES (TELA 1) */
-    .player-item { display: flex; align-items: center; background: white; margin-bottom: 8px; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .player-item.is-seed { border-left: 6px solid var(--danger); }
-    .player-item input { flex-grow: 1; border: 1px solid #ddd; padding: 10px; border-radius: 4px; font-size: 16px; margin-right: 10px; }
-
-    /* TELA 2: CONFRONTOS (Ajustado para 2 colunas no celular) */
-    .match-pair { 
-        display: flex; 
-        flex-direction: row; 
-        flex-wrap: nowrap; 
-        gap: 8px; 
-        justify-content: center; 
-        margin-bottom: 30px; 
-        padding: 5px; 
-        background: rgba(0,0,0,0.03); 
-        border-radius: 15px;
-    }
-
-    .match-label { 
-        width: 100%; 
-        text-align: center; 
-        font-weight: bold; 
-        color: #636e72; 
-        margin-bottom: 5px;
-        flex-basis: 100%;
-    }
-
-    .team-card { 
-        flex: 1; 
-        min-width: 150px; 
-        background: white; 
-        border-radius: 12px; 
-        padding: 8px; 
-        border-top: 10px solid #bdc3c7; 
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        font-size: 13px;
-    }
-
+    /* Zonas de Times */
+    .zone-title { background: var(--dark); color: white; padding: 10px; border-radius: 8px; margin: 20px 0 10px; text-align: center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    
+    .match-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+    
+    .team-card { background: white; border-radius: 10px; padding: 10px; border-top: 8px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; transition: 0.3s; }
+    .team-card.selected { border: 3px solid var(--azul); transform: scale(1.02); }
     .team-azul { border-top-color: var(--azul); }
     .team-amarelo { border-top-color: var(--amarelo); }
 
-    /* Alça de arraste maior para o celular */
-    .handle { 
-        height: 35px; 
-        line-height: 35px; 
-        background: #f1f1f1; 
-        border-radius: 4px; 
-        margin-bottom: 10px; 
-        text-align: center; 
-        font-size: 10px; 
-        color: #999; 
-        cursor: move;
-        touch-action: none; 
-    }
+    .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer; }
+    .team-header h4 { margin: 0; font-size: 14px; }
 
-    .slots-container { min-height: 100px; padding: 5px; }
+    /* Botões de Ação do Time */
+    .team-controls { display: flex; gap: 5px; margin-bottom: 10px; }
+    .btn-action { background: #eee; border: 1px solid #ddd; padding: 5px; border-radius: 4px; font-size: 12px; flex: 1; }
 
-    /* Jogador com botões ao lado para economizar altura */
-    .slot { 
-        background: #fff; 
-        border: 1px solid #eee; 
-        margin-bottom: 4px; 
-        padding: 8px; 
-        border-radius: 6px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between;
-        cursor: grab;
-    }
+    /* Jogadores */
+    .slot { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #f9f9f9; border: 1px solid #eee; margin-bottom: 4px; border-radius: 5px; font-size: 13px; }
+    .slot-actions button { background: none; border: none; padding: 2px 5px; font-size: 14px; cursor: pointer; }
 
-    .p-name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-grow: 1;
-        margin-right: 5px;
-    }
-
-    .slot-actions {
-        display: flex;
-        gap: 5px;
-        flex-shrink: 0;
-    }
-
-    .slot-actions button {
-        background: #f8f9fa;
-        padding: 4px 6px;
-        font-size: 14px;
-        border: 1px solid #ddd;
-    }
-
-    .dragging { opacity: 0.3; }
+    /* Botões Gerais */
+    button { cursor: pointer; font-weight: bold; border-radius: 6px; border: none; }
+    .btn-draw { background: var(--dark); color: white; width: 100%; padding: 15px; font-size: 16px; margin-top: 15px; }
+    .btn-add { background: var(--success); color: white; width: 100%; padding: 12px; margin: 10px 0; }
+    .btn-clear { background: var(--danger); color: white; padding: 8px 12px; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -182,15 +84,14 @@
     </div>
 
     <script>
-    // --- INICIALIZAÇÃO E SPLASH ---
+    let globalTeams = [];
+    let selectedTeamIndex = null;
+
     window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.getElementById('splash-screen').classList.add('splash-hidden');
-        }, 4000);
+        setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 4000);
         loadFromLocal();
     });
 
-    // --- PERSISTÊNCIA (localStorage) ---
     function saveToLocal() {
         const data = Array.from(document.querySelectorAll('.player-item')).map(item => ({
             name: item.querySelector('input').value,
@@ -203,19 +104,8 @@
         const saved = JSON.parse(localStorage.getItem('futebol_players') || '[]');
         const list = document.getElementById('player-list');
         list.innerHTML = '';
-        if(saved.length > 0) {
-            saved.forEach(p => addPlayerRow(p.name, p.isSeed));
-        } else {
-            for(let i=0; i<8; i++) addPlayerRow();
-        }
-    }
-
-    // --- FUNÇÕES DE LIMPEZA E ADIÇÃO ---
-    function clearAllPlayers() {
-        if(confirm("Tem certeza que deseja apagar todos os nomes da lista?")) {
-            localStorage.removeItem('futebol_players');
-            loadFromLocal();
-        }
+        if(saved.length > 0) saved.forEach(p => addPlayerRow(p.name, p.isSeed));
+        else for(let i=0; i<8; i++) addPlayerRow();
     }
 
     function addPlayerRow(name = "", isSeed = false) {
@@ -223,195 +113,153 @@
         div.className = `player-item ${isSeed ? 'is-seed' : ''}`;
         div.innerHTML = `
             <input type="text" placeholder="Nome" value="${name}" oninput="saveToLocal()">
-            <label style="font-size: 12px;"><input type="checkbox" ${isSeed ? 'checked' : ''} onchange="toggleSeed(this); saveToLocal()"> Cabeça</label>
-            <button onclick="this.parentElement.remove(); saveToLocal()" style="margin-left:10px; background:none; color:red; font-size:18px;">✕</button>
+            <label><input type="checkbox" ${isSeed ? 'checked' : ''} onchange="this.closest('.player-item').classList.toggle('is-seed', this.checked); saveToLocal()"> ⭐</label>
+            <button onclick="this.parentElement.remove(); saveToLocal()" style="color:red; margin-left:10px;">✕</button>
         `;
         document.getElementById('player-list').appendChild(div);
     }
 
-    function toggleSeed(cb) { cb.closest('.player-item').classList.toggle('is-seed', cb.checked); }
-
     function showScreen(s) {
         document.getElementById('screen-setup').classList.toggle('hidden', s !== 'setup');
         document.getElementById('screen-result').classList.toggle('hidden', s !== 'result');
-        window.scrollTo(0,0);
     }
 
-    // --- LÓGICA DO SORTEIO ---
     function drawTeams() {
-        const allPlayers = Array.from(document.querySelectorAll('.player-item'))
-            .map(item => ({ 
-                name: item.querySelector('input').value, 
-                isSeed: item.querySelector('input[type="checkbox"]').checked 
-            })).filter(p => p.name.trim());
+        const players = Array.from(document.querySelectorAll('.player-item'))
+            .map(item => ({ name: item.querySelector('input').value, isSeed: item.querySelector('input[type="checkbox"]').checked }))
+            .filter(p => p.name.trim());
 
-        if(allPlayers.length === 0) return alert("Insira os nomes dos jogadores!");
+        if(players.length === 0) return alert("Insira os nomes!");
 
         const size = parseInt(document.getElementById('players-per-team').value);
-        const totalTeams = Math.ceil(allPlayers.length / size);
-        const teams = Array.from({ length: totalTeams }, () => []);
-
-        const seeds = allPlayers.filter(p => p.isSeed);
-        const commons = allPlayers.filter(p => !p.isSeed);
-
-        const shuffle = (array) => {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        };
-
-        const shuffledSeeds = shuffle(seeds);
-        shuffledSeeds.forEach((p, i) => {
-            teams[i % totalTeams].push(p.name);
-        });
-
-        let firstTeamSlots = size - teams[0].length;
-        let secondTeamSlots = (teams[1] ? size - teams[1].length : 0);
+        const totalTeams = Math.ceil(players.length / size);
         
-        const totalNeededForFirstMatch = (firstTeamSlots > 0 ? firstTeamSlots : 0) + (secondTeamSlots > 0 ? secondTeamSlots : 0);
-        const playersForFirstMatch = commons.slice(0, totalNeededForFirstMatch);
-        const remainingCommons = commons.slice(totalNeededForFirstMatch);
+        // Lógica de Potes com Cabeças de Chave
+        const seeds = shuffle(players.filter(p => p.isSeed));
+        const commons = players.filter(p => !p.isSeed);
+        
+        globalTeams = Array.from({ length: totalTeams }, () => []);
+        seeds.forEach((p, i) => globalTeams[i % totalTeams].push(p.name));
 
-        const shuffledFirstMatch = shuffle(playersForFirstMatch);
-        shuffledFirstMatch.forEach(nameObj => {
-            if (teams[0].length < size) {
-                teams[0].push(nameObj.name);
-            } else if (teams[1] && teams[1].length < size) {
-                teams[1].push(nameObj.name);
+        const p1Needed = (size * 2) - (globalTeams[0].length + (globalTeams[1] ? globalTeams[1].length : 0));
+        const p1 = shuffle(commons.slice(0, p1Needed));
+        const p2 = shuffle(commons.slice(p1Needed));
+
+        p1.forEach(p => {
+            if(globalTeams[0].length < size) globalTeams[0].push(p.name);
+            else if(globalTeams[1]) globalTeams[1].push(p.name);
+        });
+
+        p2.forEach(p => {
+            for(let j = (totalTeams > 2 ? 2 : 0); j < totalTeams; j++) {
+                if(globalTeams[j].length < size) { globalTeams[j].push(p.name); break; }
             }
         });
 
-        const shuffledRemaining = shuffle(remainingCommons);
-        shuffledRemaining.forEach((p, i) => {
-            let t = (totalTeams > 2) ? 2 : 0;
-            let found = false;
-            for (let j = t; j < totalTeams; j++) {
-                if (teams[j].length < size) {
-                    teams[j].push(p.name);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                for (let j = 0; j < totalTeams; j++) {
-                    if (teams[j].length < size) {
-                        teams[j].push(p.name);
-                        break;
-                    }
-                }
-            }
-        });
-
-        renderMatches(teams);
+        renderMatches();
         showScreen('result');
     }
 
-    function renderMatches(teams) {
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function renderMatches() {
         const wrapper = document.getElementById('matches-wrapper');
         wrapper.innerHTML = '';
-        for (let i = 0; i < teams.length; i += 2) {
-            const matchDiv = document.createElement('div');
-            matchDiv.className = 'match-pair';
-            matchDiv.innerHTML = `<div class="match-label">Confronto ${Math.floor(i/2) + 1}</div>`;
-            matchDiv.appendChild(createTeamCard(teams[i], i + 1));
-            if (teams[i+1]) matchDiv.appendChild(createTeamCard(teams[i+1], i + 2));
-            wrapper.appendChild(matchDiv);
+        selectedTeamIndex = null;
+
+        // Zona 1: Em Jogo
+        wrapper.innerHTML += `<div class="zone-title">🏟️ Partida Atual</div>`;
+        const matchDiv = document.createElement('div');
+        matchDiv.className = 'match-pair';
+        matchDiv.appendChild(createTeamCard(0));
+        if (globalTeams[1]) matchDiv.appendChild(createTeamCard(1));
+        wrapper.appendChild(matchDiv);
+
+        // Zona 2: Espera
+        if (globalTeams.length > 2) {
+            wrapper.innerHTML += `<div class="zone-title">⏳ Próximos da Fila</div>`;
+            for (let i = 2; i < globalTeams.length; i++) {
+                wrapper.appendChild(createTeamCard(i));
+            }
         }
     }
 
-    // FUNÇÃO AUXILIAR PARA GERAR O HTML DO JOGADOR (SOLUÇÃO DOS BOTÕES LADO A LADO)
-    function getPlayerSlotHTML(playerName) {
-        return `<div class="slot" draggable="true" ondragstart="dragPlayer(event)">
-            <span class="p-name">${playerName}</span>
-            <div class="slot-actions">
-                <button onclick="editP(this)">✎</button>
-                <button onclick="this.closest('.slot').remove()" style="color:red">✕</button>
-            </div>
-        </div>`;
-    }
-
-    function createTeamCard(players, num) {
+    function createTeamCard(index) {
         const card = document.createElement('div');
-        card.className = 'team-card';
-        card.draggable = true;
-        card.addEventListener('dragstart', dragTeam);
-        card.addEventListener('dragover', allowDrop);
-        card.addEventListener('drop', dropTeam);
+        card.className = `team-card ${selectedTeamIndex === index ? 'selected' : ''}`;
         card.innerHTML = `
-            <div class="handle">::: MOVER TIME :::</div>
-            <select onchange="this.closest('.team-card').className = 'team-card team-' + this.value" style="width:100%; margin-bottom:10px; padding:5px;">
-                <option value="">Escolher Cor</option>
-                <option value="azul">Azul</option>
-                <option value="amarelo">Amarelo</option>
-            </select>
-            <h4 contenteditable="true" style="margin:5px 0">Time ${num}</h4>
-            <div class="slots-container" ondrop="dropPlayer(event)" ondragover="allowDrop(event)">
-                ${players.map(p => getPlayerSlotHTML(p)).join('')}
-            </div>`;
+            <div class="team-header" onclick="selectTeam(${index})">
+                <h4>TIME ${index + 1}</h4>
+                <span>${selectedTeamIndex === index ? '✅' : '👆'}</span>
+            </div>
+            <div class="team-controls">
+                <button class="btn-action" onclick="moveTeam(${index}, -1)">🔼</button>
+                <button class="btn-action" onclick="moveTeam(${index}, 1)">🔽</button>
+            </div>
+            <div class="slots-container">
+                ${globalTeams[index].map((p, i) => `
+                    <div class="slot">
+                        <span>${p}</span>
+                        <div class="slot-actions">
+                            <button onclick="editPlayerInTeam(${index}, ${i})">✎</button>
+                            <button onclick="removePlayerInTeam(${index}, ${i})" style="color:red">✕</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
         return card;
     }
 
-    // --- DRAG AND DROP E EDIÇÃO ---
-    let draggedItem = null;
-    let draggedType = '';
-    function allowDrop(ev) { ev.preventDefault(); }
-    
-    function dragPlayer(ev) { 
-        draggedItem = ev.target; 
-        draggedType = 'player'; 
-        ev.stopPropagation(); 
-    }
-
-    function dropPlayer(ev) {
-        ev.preventDefault();
-        const container = ev.target.closest('.slots-container');
-        if (draggedType === 'player' && container) {
-            container.appendChild(draggedItem);
-        }
-    }
-
-    function dragTeam(ev) { 
-        if(ev.target.className.includes('team-card')) { 
-            draggedItem = ev.target; 
-            draggedType = 'team'; 
-            ev.target.classList.add('dragging'); 
-        } 
-    }
-
-    function dropTeam(ev) {
-        ev.preventDefault();
-        if (draggedType === 'team') {
-            const target = ev.target.closest('.team-card');
-            if(target && target !== draggedItem) {
-                target.parentNode.insertBefore(draggedItem, target.nextSibling);
+    function selectTeam(index) {
+        if (selectedTeamIndex === null) {
+            selectedTeamIndex = index;
+        } else {
+            if (selectedTeamIndex !== index) {
+                // Troca os times de lugar
+                const temp = globalTeams[selectedTeamIndex];
+                globalTeams[selectedTeamIndex] = globalTeams[index];
+                globalTeams[index] = temp;
             }
+            selectedTeamIndex = null;
         }
-        document.querySelectorAll('.team-card').forEach(c => c.classList.remove('dragging'));
+        renderMatches();
     }
 
-    function editP(btn) {
-        const span = btn.closest('.slot').querySelector('.p-name');
-        const n = prompt("Editar nome do jogador:", span.innerText);
-        if(n) span.innerText = n;
+    function moveTeam(index, direction) {
+        const newIndex = index + direction;
+        if (newIndex >= 0 && newIndex < globalTeams.length) {
+            const temp = globalTeams[index];
+            globalTeams[index] = globalTeams[newIndex];
+            globalTeams[newIndex] = temp;
+            renderMatches();
+        }
+    }
+
+    function editPlayerInTeam(tIdx, pIdx) {
+        const n = prompt("Nome:", globalTeams[tIdx][pIdx]);
+        if(n) { globalTeams[tIdx][pIdx] = n; renderMatches(); }
+    }
+
+    function removePlayerInTeam(tIdx, pIdx) {
+        globalTeams[tIdx].splice(pIdx, 1);
+        renderMatches();
     }
 
     function addNewPlayerToResult() {
-        const n = prompt("Nome do Jogador Extra:");
-        if(n) {
-            const firstContainer = document.querySelector('.slots-container');
-            if(firstContainer) {
-                firstContainer.insertAdjacentHTML('beforeend', getPlayerSlotHTML(n));
-            }
-        }
+        const n = prompt("Nome do Jogador:");
+        if(n) { globalTeams[0].push(n); renderMatches(); }
     }
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
+    function clearAllPlayers() {
+        if(confirm("Limpar tudo?")) { localStorage.removeItem('futebol_players'); loadFromLocal(); }
     }
 </script>
 </body>
 </html>
-
-
