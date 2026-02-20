@@ -8,86 +8,142 @@
     <meta name="theme-color" content="#2c3e50">
 
     <style>
-        :root { --azul: #3498db; --amarelo: #f1c40f; --dark: #2c3e50; --danger: #e74c3c; --success: #2ecc71; --gray: #95a5a6; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #dfe6e9; overflow-x: hidden; }
-        
-        /* TELA DE SPLASH */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--dark);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10000; transition: opacity 0.8s ease, visibility 0.8s;
-        }
-        #splash-screen img { width: 180px; margin-bottom: 25px; animation: pulse 2s infinite; }
-        #splash-screen h2 { color: white; font-weight: 300; letter-spacing: 3px; margin: 0; }
-        .splash-hidden { opacity: 0; visibility: hidden; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    :root { 
+        --azul: #3498db; 
+        --amarelo: #f1c40f; 
+        --dark: #2c3e50; 
+        --danger: #e74c3c; 
+        --success: #2ecc71; 
+        --gray: #95a5a6; 
+    }
 
-        /* INTERFACE GERAL */
-        .container { padding: 15px; max-width: 900px; margin: auto; }
-        .hidden { display: none; }
-        h2 { text-align: center; color: var(--dark); margin-top: 10px; }
-        
-        /* BOTOES */
-        button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.2s; }
-        .btn-add { background: var(--success); color: white; width: 100%; padding: 12px; margin: 10px 0; }
-        .btn-draw { background: var(--dark); color: white; width: 100%; height: 55px; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .btn-back { background: #636e72; color: white; padding: 8px 15px; margin-bottom: 20px; }
-        .btn-clear { background: var(--danger); color: white; padding: 8px 15px; font-size: 12px; }
+    body { 
+        font-family: 'Segoe UI', sans-serif; 
+        margin: 0; 
+        background: #dfe6e9; 
+        overflow-x: hidden; 
+    }
+    
+    /* TELA DE SPLASH */
+    #splash-screen {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: var(--dark);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        z-index: 10000; transition: opacity 0.8s ease, visibility 0.8s;
+    }
+    #splash-screen img { width: 180px; margin-bottom: 25px; animation: pulse 2s infinite; }
+    #splash-screen h2 { color: white; font-weight: 300; letter-spacing: 3px; margin: 0; }
+    .splash-hidden { opacity: 0; visibility: hidden; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* HEADER TELA 1 */
-        .header-setup { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    /* INTERFACE GERAL */
+    .container { padding: 15px; max-width: 900px; margin: auto; }
+    .hidden { display: none; }
+    h2 { text-align: center; color: var(--dark); margin-top: 10px; }
+    
+    /* BOTOES */
+    button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.2s; }
+    .btn-add { background: var(--success); color: white; width: 100%; padding: 12px; margin: 10px 0; }
+    .btn-draw { background: var(--dark); color: white; width: 100%; height: 55px; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .btn-back { background: #636e72; color: white; padding: 8px 15px; margin-bottom: 20px; }
+    .btn-clear { background: var(--danger); color: white; padding: 8px 15px; font-size: 12px; }
 
-        /* LISTA JOGADORES */
-        .player-item { display: flex; align-items: center; background: white; margin-bottom: 8px; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .player-item.is-seed { border-left: 6px solid var(--danger); }
-        .player-item input { flex-grow: 1; border: 1px solid #ddd; padding: 10px; border-radius: 4px; font-size: 16px; margin-right: 10px; }
+    /* HEADER TELA 1 */
+    .header-setup { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-        /* TELA 2: CONFRONTOS */
-        /* TELA 2: CONFRONTOS (Ajustado para 2 colunas no celular) */
-.match-pair { 
-    display: flex; 
-    flex-direction: row; /* Força ficar lado a lado */
-    flex-wrap: nowrap;   /* Impede de pular linha */
-    gap: 10px; 
-    justify-content: center; 
-    margin-bottom: 30px; 
-    padding: 10px; 
-    background: rgba(0,0,0,0.03); 
-    border-radius: 15px;
-    overflow-x: auto; /* Permite deslizar se a tela for muito pequena */
-}
+    /* LISTA JOGADORES (TELA 1) */
+    .player-item { display: flex; align-items: center; background: white; margin-bottom: 8px; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .player-item.is-seed { border-left: 6px solid var(--danger); }
+    .player-item input { flex-grow: 1; border: 1px solid #ddd; padding: 10px; border-radius: 4px; font-size: 16px; margin-right: 10px; }
 
-.match-label { 
-    width: 100%; 
-    text-align: center; 
-    font-weight: bold; 
-    color: #636e72; 
-    margin-bottom: 5px;
-    flex-basis: 100%; /* Garante que o rótulo ocupe a linha de cima */
-}
+    /* TELA 2: CONFRONTOS (Ajustado para 2 colunas no celular) */
+    .match-pair { 
+        display: flex; 
+        flex-direction: row; 
+        flex-wrap: nowrap; 
+        gap: 8px; 
+        justify-content: center; 
+        margin-bottom: 30px; 
+        padding: 5px; 
+        background: rgba(0,0,0,0.03); 
+        border-radius: 15px;
+    }
 
-.team-card { 
-    flex: 1; 
-    min-width: 160px; /* Diminuído para caber dois lado a lado no celular */
-    background: white; 
-    border-radius: 12px; 
-    padding: 10px; 
-    border-top: 10px solid #bdc3c7; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    font-size: 14px; /* Fonte levemente menor para caber melhor */
-}
-        .team-azul { border-top-color: var(--azul); }
-        .team-amarelo { border-top-color: var(--amarelo); }
-        .handle { height: 25px; cursor: move; background: #f1f1f1; border-radius: 4px; margin-bottom: 10px; text-align: center; font-size: 11px; color: #999; line-height: 25px; }
-        .slots-container { min-height: 100px; padding: 5px; }
-        /* Ajuste nos slots para economizar espaço no celular */
-.slot { 
-    padding: 8px; 
-    font-size: 13px;
-}
-        .dragging { opacity: 0.3; }
-    </style>
+    .match-label { 
+        width: 100%; 
+        text-align: center; 
+        font-weight: bold; 
+        color: #636e72; 
+        margin-bottom: 5px;
+        flex-basis: 100%;
+    }
+
+    .team-card { 
+        flex: 1; 
+        min-width: 150px; 
+        background: white; 
+        border-radius: 12px; 
+        padding: 8px; 
+        border-top: 10px solid #bdc3c7; 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        font-size: 13px;
+    }
+
+    .team-azul { border-top-color: var(--azul); }
+    .team-amarelo { border-top-color: var(--amarelo); }
+
+    /* Alça de arraste maior para o celular */
+    .handle { 
+        height: 35px; 
+        line-height: 35px; 
+        background: #f1f1f1; 
+        border-radius: 4px; 
+        margin-bottom: 10px; 
+        text-align: center; 
+        font-size: 10px; 
+        color: #999; 
+        cursor: move;
+        touch-action: none; 
+    }
+
+    .slots-container { min-height: 100px; padding: 5px; }
+
+    /* Jogador com botões ao lado para economizar altura */
+    .slot { 
+        background: #fff; 
+        border: 1px solid #eee; 
+        margin-bottom: 4px; 
+        padding: 8px; 
+        border-radius: 6px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between;
+        cursor: grab;
+    }
+
+    .p-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-grow: 1;
+        margin-right: 5px;
+    }
+
+    .slot-actions {
+        display: flex;
+        gap: 5px;
+        flex-shrink: 0;
+    }
+
+    .slot-actions button {
+        background: #f8f9fa;
+        padding: 4px 6px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+    }
+
+    .dragging { opacity: 0.3; }
+</style>
 </head>
 <body>
 
@@ -126,219 +182,236 @@
     </div>
 
     <script>
-        // --- INICIALIZAÇÃO E SPLASH ---
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('splash-screen').classList.add('splash-hidden');
-            }, 4000);
+    // --- INICIALIZAÇÃO E SPLASH ---
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').classList.add('splash-hidden');
+        }, 4000);
+        loadFromLocal();
+    });
+
+    // --- PERSISTÊNCIA (localStorage) ---
+    function saveToLocal() {
+        const data = Array.from(document.querySelectorAll('.player-item')).map(item => ({
+            name: item.querySelector('input').value,
+            isSeed: item.querySelector('input[type="checkbox"]').checked
+        })).filter(p => p.name.trim());
+        localStorage.setItem('futebol_players', JSON.stringify(data));
+    }
+
+    function loadFromLocal() {
+        const saved = JSON.parse(localStorage.getItem('futebol_players') || '[]');
+        const list = document.getElementById('player-list');
+        list.innerHTML = '';
+        if(saved.length > 0) {
+            saved.forEach(p => addPlayerRow(p.name, p.isSeed));
+        } else {
+            for(let i=0; i<8; i++) addPlayerRow();
+        }
+    }
+
+    // --- FUNÇÕES DE LIMPEZA E ADIÇÃO ---
+    function clearAllPlayers() {
+        if(confirm("Tem certeza que deseja apagar todos os nomes da lista?")) {
+            localStorage.removeItem('futebol_players');
             loadFromLocal();
+        }
+    }
+
+    function addPlayerRow(name = "", isSeed = false) {
+        const div = document.createElement('div');
+        div.className = `player-item ${isSeed ? 'is-seed' : ''}`;
+        div.innerHTML = `
+            <input type="text" placeholder="Nome" value="${name}" oninput="saveToLocal()">
+            <label style="font-size: 12px;"><input type="checkbox" ${isSeed ? 'checked' : ''} onchange="toggleSeed(this); saveToLocal()"> Cabeça</label>
+            <button onclick="this.parentElement.remove(); saveToLocal()" style="margin-left:10px; background:none; color:red; font-size:18px;">✕</button>
+        `;
+        document.getElementById('player-list').appendChild(div);
+    }
+
+    function toggleSeed(cb) { cb.closest('.player-item').classList.toggle('is-seed', cb.checked); }
+
+    function showScreen(s) {
+        document.getElementById('screen-setup').classList.toggle('hidden', s !== 'setup');
+        document.getElementById('screen-result').classList.toggle('hidden', s !== 'result');
+        window.scrollTo(0,0);
+    }
+
+    // --- LÓGICA DO SORTEIO ---
+    function drawTeams() {
+        const allPlayers = Array.from(document.querySelectorAll('.player-item'))
+            .map(item => ({ 
+                name: item.querySelector('input').value, 
+                isSeed: item.querySelector('input[type="checkbox"]').checked 
+            })).filter(p => p.name.trim());
+
+        if(allPlayers.length === 0) return alert("Insira os nomes dos jogadores!");
+
+        const size = parseInt(document.getElementById('players-per-team').value);
+        const totalTeams = Math.ceil(allPlayers.length / size);
+        const teams = Array.from({ length: totalTeams }, () => []);
+
+        const seeds = allPlayers.filter(p => p.isSeed);
+        const commons = allPlayers.filter(p => !p.isSeed);
+
+        const shuffle = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        };
+
+        const shuffledSeeds = shuffle(seeds);
+        shuffledSeeds.forEach((p, i) => {
+            teams[i % totalTeams].push(p.name);
         });
 
-        // --- PERSISTÊNCIA (localStorage) ---
-        function saveToLocal() {
-            const data = Array.from(document.querySelectorAll('.player-item')).map(item => ({
-                name: item.querySelector('input').value,
-                isSeed: item.querySelector('input[type="checkbox"]').checked
-            })).filter(p => p.name.trim());
-            localStorage.setItem('futebol_players', JSON.stringify(data));
-        }
-
-        function loadFromLocal() {
-            const saved = JSON.parse(localStorage.getItem('futebol_players') || '[]');
-            const list = document.getElementById('player-list');
-            list.innerHTML = '';
-            if(saved.length > 0) {
-                saved.forEach(p => addPlayerRow(p.name, p.isSeed));
-            } else {
-                for(let i=0; i<8; i++) addPlayerRow();
-            }
-        }
-
-        // --- FUNÇÕES DE LIMPEZA E ADIÇÃO ---
-        function clearAllPlayers() {
-            if(confirm("Tem certeza que deseja apagar todos os nomes da lista?")) {
-                localStorage.removeItem('futebol_players');
-                loadFromLocal();
-            }
-        }
-
-        function addPlayerRow(name = "", isSeed = false) {
-            const div = document.createElement('div');
-            div.className = `player-item ${isSeed ? 'is-seed' : ''}`;
-            div.innerHTML = `
-                <input type="text" placeholder="Nome" value="${name}" oninput="saveToLocal()">
-                <label style="font-size: 12px;"><input type="checkbox" ${isSeed ? 'checked' : ''} onchange="toggleSeed(this); saveToLocal()"> Cabeça</label>
-                <button onclick="this.parentElement.remove(); saveToLocal()" style="margin-left:10px; background:none; color:red; font-size:18px;">✕</button>
-            `;
-            document.getElementById('player-list').appendChild(div);
-        }
-
-        function toggleSeed(cb) { cb.closest('.player-item').classList.toggle('is-seed', cb.checked); }
-
-        function showScreen(s) {
-            document.getElementById('screen-setup').classList.toggle('hidden', s !== 'setup');
-            document.getElementById('screen-result').classList.toggle('hidden', s !== 'result');
-            window.scrollTo(0,0);
-        }
-
-        // --- LÓGICA DO SORTEIO ---
-        function drawTeams() {
-    const allPlayers = Array.from(document.querySelectorAll('.player-item'))
-        .map(item => ({ 
-            name: item.querySelector('input').value, 
-            isSeed: item.querySelector('input[type="checkbox"]').checked 
-        })).filter(p => p.name.trim());
-
-    if(allPlayers.length === 0) return alert("Insira os nomes dos jogadores!");
-
-    const size = parseInt(document.getElementById('players-per-team').value);
-    const totalTeams = Math.ceil(allPlayers.length / size);
-    const teams = Array.from({ length: totalTeams }, () => []);
-
-    // 1. Separar Cabeças de Chave e Comuns
-    const seeds = allPlayers.filter(p => p.isSeed);
-    const commons = allPlayers.filter(p => !p.isSeed);
-
-    // Função para embaralhar
-    const shuffle = (array) => {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    };
-
-    // 2. Distribuir os Cabeças de Chave primeiro (Sempre prioridade)
-    // Eles são sorteados entre si e espalhados pelos times
-    const shuffledSeeds = shuffle(seeds);
-    shuffledSeeds.forEach((p, i) => {
-        teams[i % totalTeams].push(p.name);
-    });
-
-    // 3. Identificar quantas vagas faltam nos 2 primeiros times
-    // (Pois os cabeças de chave já ocuparam algumas)
-    let firstTeamSlots = size - teams[0].length;
-    let secondTeamSlots = size - teams[1].length;
-    if (secondTeamSlots < 0) secondTeamSlots = 0; // Prevenção
-
-    // 4. Pote do Primeiro Jogo: Pega os primeiros "comuns" da lista para completar os 2 times
-    const totalNeededForFirstMatch = firstTeamSlots + secondTeamSlots;
-    const playersForFirstMatch = commons.slice(0, totalNeededForFirstMatch);
-    const remainingCommons = commons.slice(totalNeededForFirstMatch);
-
-    // 5. Sorteia e completa os dois primeiros times
-    const shuffledFirstMatch = shuffle(playersForFirstMatch);
-    shuffledFirstMatch.forEach(nameObj => {
-        if (teams[0].length < size) {
-            teams[0].push(nameObj.name);
-        } else {
-            teams[1].push(nameObj.name);
-        }
-    });
-
-    // 6. Sorteia o restante e preenche os outros times (Time 3, 4...)
-    const shuffledRemaining = shuffle(remainingCommons);
-    shuffledRemaining.forEach((p, i) => {
-        // Encontra o próximo time com vaga disponível a partir do Time 3 (índice 2)
-        let t = (totalTeams > 2) ? 2 : 0;
-        let found = false;
+        let firstTeamSlots = size - teams[0].length;
+        let secondTeamSlots = (teams[1] ? size - teams[1].length : 0);
         
-        for (let j = t; j < totalTeams; j++) {
-            if (teams[j].length < size) {
-                teams[j].push(p.name);
-                found = true;
-                break;
+        const totalNeededForFirstMatch = (firstTeamSlots > 0 ? firstTeamSlots : 0) + (secondTeamSlots > 0 ? secondTeamSlots : 0);
+        const playersForFirstMatch = commons.slice(0, totalNeededForFirstMatch);
+        const remainingCommons = commons.slice(totalNeededForFirstMatch);
+
+        const shuffledFirstMatch = shuffle(playersForFirstMatch);
+        shuffledFirstMatch.forEach(nameObj => {
+            if (teams[0].length < size) {
+                teams[0].push(nameObj.name);
+            } else if (teams[1] && teams[1].length < size) {
+                teams[1].push(nameObj.name);
             }
-        }
-        // Se todos os times a partir do 3 estiverem cheios, volta para o 1 e 2
-        if (!found) {
-            for (let j = 0; j < totalTeams; j++) {
+        });
+
+        const shuffledRemaining = shuffle(remainingCommons);
+        shuffledRemaining.forEach((p, i) => {
+            let t = (totalTeams > 2) ? 2 : 0;
+            let found = false;
+            for (let j = t; j < totalTeams; j++) {
                 if (teams[j].length < size) {
                     teams[j].push(p.name);
+                    found = true;
                     break;
                 }
             }
+            if (!found) {
+                for (let j = 0; j < totalTeams; j++) {
+                    if (teams[j].length < size) {
+                        teams[j].push(p.name);
+                        break;
+                    }
+                }
+            }
+        });
+
+        renderMatches(teams);
+        showScreen('result');
+    }
+
+    function renderMatches(teams) {
+        const wrapper = document.getElementById('matches-wrapper');
+        wrapper.innerHTML = '';
+        for (let i = 0; i < teams.length; i += 2) {
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'match-pair';
+            matchDiv.innerHTML = `<div class="match-label">Confronto ${Math.floor(i/2) + 1}</div>`;
+            matchDiv.appendChild(createTeamCard(teams[i], i + 1));
+            if (teams[i+1]) matchDiv.appendChild(createTeamCard(teams[i+1], i + 2));
+            wrapper.appendChild(matchDiv);
         }
-    });
+    }
 
-    renderMatches(teams);
-    showScreen('result');
-}
+    // FUNÇÃO AUXILIAR PARA GERAR O HTML DO JOGADOR (SOLUÇÃO DOS BOTÕES LADO A LADO)
+    function getPlayerSlotHTML(playerName) {
+        return `<div class="slot" draggable="true" ondragstart="dragPlayer(event)">
+            <span class="p-name">${playerName}</span>
+            <div class="slot-actions">
+                <button onclick="editP(this)">✎</button>
+                <button onclick="this.closest('.slot').remove()" style="color:red">✕</button>
+            </div>
+        </div>`;
+    }
 
-        function renderMatches(teams) {
-            const wrapper = document.getElementById('matches-wrapper');
-            wrapper.innerHTML = '';
-            for (let i = 0; i < teams.length; i += 2) {
-                const matchDiv = document.createElement('div');
-                matchDiv.className = 'match-pair';
-                matchDiv.innerHTML = `<div class="match-label">Confronto ${Math.floor(i/2) + 1}</div>`;
-                matchDiv.appendChild(createTeamCard(teams[i], i + 1));
-                if (teams[i+1]) matchDiv.appendChild(createTeamCard(teams[i+1], i + 2));
-                wrapper.appendChild(matchDiv);
+    function createTeamCard(players, num) {
+        const card = document.createElement('div');
+        card.className = 'team-card';
+        card.draggable = true;
+        card.addEventListener('dragstart', dragTeam);
+        card.addEventListener('dragover', allowDrop);
+        card.addEventListener('drop', dropTeam);
+        card.innerHTML = `
+            <div class="handle">::: MOVER TIME :::</div>
+            <select onchange="this.closest('.team-card').className = 'team-card team-' + this.value" style="width:100%; margin-bottom:10px; padding:5px;">
+                <option value="">Escolher Cor</option>
+                <option value="azul">Azul</option>
+                <option value="amarelo">Amarelo</option>
+            </select>
+            <h4 contenteditable="true" style="margin:5px 0">Time ${num}</h4>
+            <div class="slots-container" ondrop="dropPlayer(event)" ondragover="allowDrop(event)">
+                ${players.map(p => getPlayerSlotHTML(p)).join('')}
+            </div>`;
+        return card;
+    }
+
+    // --- DRAG AND DROP E EDIÇÃO ---
+    let draggedItem = null;
+    let draggedType = '';
+    function allowDrop(ev) { ev.preventDefault(); }
+    
+    function dragPlayer(ev) { 
+        draggedItem = ev.target; 
+        draggedType = 'player'; 
+        ev.stopPropagation(); 
+    }
+
+    function dropPlayer(ev) {
+        ev.preventDefault();
+        const container = ev.target.closest('.slots-container');
+        if (draggedType === 'player' && container) {
+            container.appendChild(draggedItem);
+        }
+    }
+
+    function dragTeam(ev) { 
+        if(ev.target.className.includes('team-card')) { 
+            draggedItem = ev.target; 
+            draggedType = 'team'; 
+            ev.target.classList.add('dragging'); 
+        } 
+    }
+
+    function dropTeam(ev) {
+        ev.preventDefault();
+        if (draggedType === 'team') {
+            const target = ev.target.closest('.team-card');
+            if(target && target !== draggedItem) {
+                target.parentNode.insertBefore(draggedItem, target.nextSibling);
             }
         }
+        document.querySelectorAll('.team-card').forEach(c => c.classList.remove('dragging'));
+    }
 
-        function createTeamCard(players, num) {
-            const card = document.createElement('div');
-            card.className = 'team-card';
-            card.draggable = true;
-            card.addEventListener('dragstart', dragTeam);
-            card.addEventListener('dragover', allowDrop);
-            card.addEventListener('drop', dropTeam);
-            card.innerHTML = `
-                <div class="handle">::: MOVER TIME :::</div>
-                <select onchange="this.closest('.team-card').className = 'team-card team-' + this.value" style="width:100%; margin-bottom:10px; padding:5px;">
-                    <option value="">Escolher Cor</option>
-                    <option value="azul">Azul</option>
-                    <option value="amarelo">Amarelo</option>
-                </select>
-                <h4 contenteditable="true" style="margin:5px 0">Time ${num}</h4>
-                <div class="slots-container" ondrop="dropPlayer(event)" ondragover="allowDrop(event)">
-                    ${players.map(p => `<div class="slot" draggable="true" ondragstart="dragPlayer(event)">
-                        <span class="p-name">${p}</span>
-                        <div class="slot-actions">
-                            <button onclick="editP(this)">✎</button>
-                            <button onclick="this.closest('.slot').remove()" style="color:red">✕</button>
-                        </div>
-                    </div>`).join('')}
-                </div>`;
-            return card;
-        }
+    function editP(btn) {
+        const span = btn.closest('.slot').querySelector('.p-name');
+        const n = prompt("Editar nome do jogador:", span.innerText);
+        if(n) span.innerText = n;
+    }
 
-        // --- DRAG AND DROP E EDIÇÃO ---
-        let draggedItem = null;
-        let draggedType = '';
-        function allowDrop(ev) { ev.preventDefault(); }
-        function dragPlayer(ev) { draggedItem = ev.target; draggedType = 'player'; ev.stopPropagation(); }
-        function dropPlayer(ev) {
-            ev.preventDefault();
-            if (draggedType === 'player') ev.target.closest('.slots-container').appendChild(draggedItem);
-        }
-        function dragTeam(ev) { if(ev.target.className.includes('team-card')) { draggedItem = ev.target; draggedType = 'team'; ev.target.classList.add('dragging'); } }
-        function dropTeam(ev) {
-            ev.preventDefault();
-            if (draggedType === 'team') {
-                const target = ev.target.closest('.team-card');
-                if(target && target !== draggedItem) target.parentNode.insertBefore(draggedItem, target.nextSibling);
-            }
-            document.querySelectorAll('.team-card').forEach(c => c.classList.remove('dragging'));
-        }
-        function editP(btn) {
-            const span = btn.closest('.slot').querySelector('.p-name');
-            const n = prompt("Editar nome do jogador:", span.innerText);
-            if(n) span.innerText = n;
-        }
-        function addNewPlayerToResult() {
-            const n = prompt("Nome do Jogador Extra:");
-            if(n) {
-                const firstContainer = document.querySelector('.slots-container');
-                firstContainer.insertAdjacentHTML('beforeend', `<div class="slot" draggable="true" ondragstart="dragPlayer(event)"><span class="p-name">${n}</span><div class="slot-actions"><button onclick="editP(this)">✎</button><button onclick="this.closest('.slot').remove()" style="color:red">✕</button></div></div>`);
+    function addNewPlayerToResult() {
+        const n = prompt("Nome do Jogador Extra:");
+        if(n) {
+            const firstContainer = document.querySelector('.slots-container');
+            if(firstContainer) {
+                firstContainer.insertAdjacentHTML('beforeend', getPlayerSlotHTML(n));
             }
         }
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
+</script>
 </body>
 </html>
+
 
