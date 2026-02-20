@@ -8,68 +8,50 @@
     <meta name="theme-color" content="#2c3e50">
 
     <style>
-    :root { --azul: #3498db; --amarelo: #f1c40f; --dark: #2c3e50; --danger: #e74c3c; --success: #2ecc71; }
-    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #dfe6e9; }
-    
-    #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; transition: 0.8s; }
-    #splash-screen img { width: 150px; animation: pulse 2s infinite; }
-    .splash-hidden { opacity: 0; visibility: hidden; }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        :root { --azul: #3498db; --amarelo: #f1c40f; --dark: #2c3e50; --danger: #e74c3c; --success: #2ecc71; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #dfe6e9; }
+        
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; transition: 0.8s; }
+        #splash-screen img { width: 150px; animation: pulse 2s infinite; }
+        .splash-hidden { opacity: 0; visibility: hidden; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-    .container { padding: 15px; max-width: 600px; margin: auto; }
-    .hidden { display: none; }
-    
-    /* Zonas de Times */
-    .zone-title { background: var(--dark); color: white; padding: 10px; border-radius: 8px; margin: 20px 0 10px; text-align: center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-    
-    .match-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-    
-    .team-card { background: white; border-radius: 10px; padding: 10px; border-top: 8px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; transition: 0.3s; }
-    .team-card.selected { border: 3px solid var(--azul); transform: scale(1.02); }
-    .team-azul { border-top-color: var(--azul); }
-    .team-amarelo { border-top-color: var(--amarelo); }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .hidden { display: none; }
+        
+        .zone-title { background: var(--dark); color: white; padding: 10px; border-radius: 8px; margin: 20px 0 10px; text-align: center; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .match-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        
+        .team-card { background: white; border-radius: 10px; padding: 10px; border-top: 8px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; transition: 0.3s; }
+        .team-card.selected { border: 3px solid var(--azul); transform: scale(1.02); z-index: 10; }
+        
+        .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer; }
+        .team-header h4 { margin: 0; font-size: 14px; }
 
-    .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer; }
-    .team-header h4 { margin: 0; font-size: 14px; }
+        .color-picker { display: flex; gap: 8px; margin-bottom: 10px; justify-content: center; }
+        .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; }
+        .color-btn.none { background: #eee; }
+        .color-btn.azul { background: var(--azul); }
+        .color-btn.amarelo { background: var(--amarelo); }
 
-    /* Seleção de Cores */
-.color-picker {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-    justify-content: center;
-}
+        .team-card.team-azul { border-top-color: var(--azul); background: #f0f7ff; }
+        .team-card.team-amarelo { border-top-color: var(--amarelo); background: #fffdf5; }
 
-.color-btn {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    border: 2px solid #ddd;
-    cursor: pointer;
-}
+        .team-controls { display: flex; gap: 5px; margin-bottom: 10px; }
+        .btn-action { background: #eee; border: 1px solid #ddd; padding: 5px; border-radius: 4px; font-size: 12px; flex: 1; cursor: pointer; }
 
-.color-btn.none { background: #eee; }
-.color-btn.azul { background: var(--azul); }
-.color-btn.amarelo { background: var(--amarelo); }
+        .slot { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #f9f9f9; border: 1px solid #eee; margin-bottom: 4px; border-radius: 5px; font-size: 13px; }
+        .slot-actions button { background: none; border: none; padding: 2px 5px; font-size: 14px; cursor: pointer; }
 
-/* Feedback visual de qual cor está ativa */
-.team-card.team-azul { border-top-color: var(--azul); background: #f0f7ff; }
-.team-card.team-amarelo { border-top-color: var(--amarelo); background: #fffdf5; }
-
-    /* Botões de Ação do Time */
-    .team-controls { display: flex; gap: 5px; margin-bottom: 10px; }
-    .btn-action { background: #eee; border: 1px solid #ddd; padding: 5px; border-radius: 4px; font-size: 12px; flex: 1; }
-
-    /* Jogadores */
-    .slot { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: #f9f9f9; border: 1px solid #eee; margin-bottom: 4px; border-radius: 5px; font-size: 13px; }
-    .slot-actions button { background: none; border: none; padding: 2px 5px; font-size: 14px; cursor: pointer; }
-
-    /* Botões Gerais */
-    button { cursor: pointer; font-weight: bold; border-radius: 6px; border: none; }
-    .btn-draw { background: var(--dark); color: white; width: 100%; padding: 15px; font-size: 16px; margin-top: 15px; }
-    .btn-add { background: var(--success); color: white; width: 100%; padding: 12px; margin: 10px 0; }
-    .btn-clear { background: var(--danger); color: white; padding: 8px 12px; font-size: 12px; }
-</style>
+        button { cursor: pointer; font-weight: bold; border-radius: 6px; border: none; }
+        .btn-draw { background: var(--dark); color: white; width: 100%; padding: 15px; font-size: 16px; margin-top: 15px; }
+        .btn-add { background: var(--success); color: white; width: 100%; padding: 12px; margin: 10px 0; }
+        .btn-clear { background: var(--danger); color: white; padding: 8px 12px; font-size: 12px; }
+        .btn-back { background: #636e72; color: white; padding: 8px 15px; margin-bottom: 20px; }
+        .header-setup { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .player-item { display: flex; align-items: center; background: white; margin-bottom: 8px; padding: 10px; border-radius: 8px; }
+        .player-item input { flex-grow: 1; border: 1px solid #ddd; padding: 8px; border-radius: 4px; margin-right: 10px; }
+    </style>
 </head>
 <body>
 
@@ -86,7 +68,7 @@
 
         <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
             <label>Jogadores por time:</label>
-            <select id="players-per-team" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd;">
+            <select id="players-per-team" style="width: 100%; padding: 10px; font-size: 16px;">
                 <option value="4">4 Jogadores</option>
                 <option value="5" selected>5 Jogadores</option>
                 <option value="6">6 Jogadores</option>
@@ -96,7 +78,6 @@
         </div>
 
         <div id="player-list"></div>
-        
         <button class="btn-add" onclick="addPlayerRow()">+ Adicionar Jogador</button>
         <button class="btn-draw" onclick="drawTeams()">GERAR CONFRONTOS</button>
     </div>
@@ -112,7 +93,7 @@
     let selectedTeamIndex = null;
 
     window.addEventListener('load', () => {
-        setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 4000);
+        setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 3000);
         loadFromLocal();
     });
 
@@ -129,7 +110,7 @@
         const list = document.getElementById('player-list');
         list.innerHTML = '';
         if(saved.length > 0) saved.forEach(p => addPlayerRow(p.name, p.isSeed));
-        else for(let i=0; i<8; i++) addPlayerRow();
+        else for(let i=0; i<10; i++) addPlayerRow();
     }
 
     function addPlayerRow(name = "", isSeed = false) {
@@ -138,7 +119,7 @@
         div.innerHTML = `
             <input type="text" placeholder="Nome" value="${name}" oninput="saveToLocal()">
             <label><input type="checkbox" ${isSeed ? 'checked' : ''} onchange="this.closest('.player-item').classList.toggle('is-seed', this.checked); saveToLocal()"> ⭐</label>
-            <button onclick="this.parentElement.remove(); saveToLocal()" style="color:red; margin-left:10px;">✕</button>
+            <button onclick="this.parentElement.remove(); saveToLocal()" style="color:red; margin-left:10px; background:none; font-size:18px;">✕</button>
         `;
         document.getElementById('player-list').appendChild(div);
     }
@@ -146,6 +127,7 @@
     function showScreen(s) {
         document.getElementById('screen-setup').classList.toggle('hidden', s !== 'setup');
         document.getElementById('screen-result').classList.toggle('hidden', s !== 'result');
+        window.scrollTo(0,0);
     }
 
     function drawTeams() {
@@ -158,20 +140,20 @@
         const size = parseInt(document.getElementById('players-per-team').value);
         const totalTeams = Math.ceil(players.length / size);
         
-        // Lógica de Potes com Cabeças de Chave
-        const seeds = shuffle(players.filter(p => p.isSeed));
-        const commons = players.filter(p => !p.isSeed);
-        
         globalTeams = Array.from({ length: totalTeams }, () => {
-    let arr = [];
-    arr.color = ""; // Inicia sem cor definida
-    return arr;
-});
+            let arr = [];
+            arr.color = "";
+            return arr;
+        });
+
+        const seeds = shuffle(players.filter(p => p.isSeed));
+        const commons = shuffle(players.filter(p => !p.isSeed));
+        
         seeds.forEach((p, i) => globalTeams[i % totalTeams].push(p.name));
 
         const p1Needed = (size * 2) - (globalTeams[0].length + (globalTeams[1] ? globalTeams[1].length : 0));
-        const p1 = shuffle(commons.slice(0, p1Needed));
-        const p2 = shuffle(commons.slice(p1Needed));
+        const p1 = commons.slice(0, Math.max(0, p1Needed));
+        const p2 = commons.slice(Math.max(0, p1Needed));
 
         p1.forEach(p => {
             if(globalTeams[0].length < size) globalTeams[0].push(p.name);
@@ -201,7 +183,6 @@
         wrapper.innerHTML = '';
         selectedTeamIndex = null;
 
-        // Zona 1: Em Jogo
         wrapper.innerHTML += `<div class="zone-title">🏟️ Partida Atual</div>`;
         const matchDiv = document.createElement('div');
         matchDiv.className = 'match-pair';
@@ -209,7 +190,6 @@
         if (globalTeams[1]) matchDiv.appendChild(createTeamCard(1));
         wrapper.appendChild(matchDiv);
 
-        // Zona 2: Espera
         if (globalTeams.length > 2) {
             wrapper.innerHTML += `<div class="zone-title">⏳ Próximos da Fila</div>`;
             for (let i = 2; i < globalTeams.length; i++) {
@@ -219,56 +199,48 @@
     }
 
     function createTeamCard(index) {
-    // Recupera a cor salva para esse time (se houver)
-    const teamColor = globalTeams[index].color || "";
-    
-    const card = document.createElement('div');
-    card.className = `team-card ${selectedTeamIndex === index ? 'selected' : ''} team-${teamColor}`;
-    
-    card.innerHTML = `
-        <div class="team-header" onclick="selectTeam(${index})">
-            <h4>TIME ${index + 1}</h4>
-            <span>${selectedTeamIndex === index ? '✅' : '👆'}</span>
-        </div>
-
-        <div class="color-picker">
-            <div class="color-btn none" onclick="setTeamColor(${index}, '')" title="Padrão"></div>
-            <div class="color-btn azul" onclick="setTeamColor(${index}, 'azul')" title="Azul"></div>
-            <div class="color-btn amarelo" onclick="setTeamColor(${index}, 'amarelo')" title="Amarelo"></div>
-        </div>
-
-        <div class="team-controls">
-            <button class="btn-action" onclick="moveTeam(${index}, -1)">🔼</button>
-            <button class="btn-action" onclick="moveTeam(${index}, 1)">🔽</button>
-        </div>
-        
-        <div class="slots-container">
-            ${globalTeams[index].map((p, i) => `
-                <div class="slot">
-                    <span>${p}</span>
-                    <div class="slot-actions">
-                        <button onclick="editPlayerInTeam(${index}, ${i})">✎</button>
-                        <button onclick="removePlayerInTeam(${index}, ${i})" style="color:red">✕</button>
+        const teamColor = globalTeams[index].color || "";
+        const card = document.createElement('div');
+        card.className = `team-card ${selectedTeamIndex === index ? 'selected' : ''} team-${teamColor}`;
+        card.innerHTML = `
+            <div class="team-header" onclick="selectTeam(${index})">
+                <h4>TIME ${index + 1}</h4>
+                <span>${selectedTeamIndex === index ? '✅' : '👆'}</span>
+            </div>
+            <div class="color-picker">
+                <div class="color-btn none" onclick="setTeamColor(${index}, '')"></div>
+                <div class="color-btn azul" onclick="setTeamColor(${index}, 'azul')"></div>
+                <div class="color-btn amarelo" onclick="setTeamColor(${index}, 'amarelo')"></div>
+            </div>
+            <div class="team-controls">
+                <button class="btn-action" onclick="moveTeam(${index}, -1)">🔼</button>
+                <button class="btn-action" onclick="moveTeam(${index}, 1)">🔽</button>
+            </div>
+            <div class="slots-container">
+                ${globalTeams[index].map((p, i) => `
+                    <div class="slot">
+                        <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-grow:1; margin-right:5px;">${p}</span>
+                        <div class="slot-actions">
+                            <button onclick="editPlayerInTeam(${index}, ${i})">✎</button>
+                            <button onclick="removePlayerInTeam(${index}, ${i})" style="color:red">✕</button>
+                        </div>
                     </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-    return card;
-}
+                `).join('')}
+            </div>
+        `;
+        return card;
+    }
 
-// Função para mudar a cor do time
-function setTeamColor(index, color) {
-    globalTeams[index].color = color;
-    renderMatches();
-}
+    function setTeamColor(index, color) {
+        globalTeams[index].color = color;
+        renderMatches();
+    }
 
     function selectTeam(index) {
         if (selectedTeamIndex === null) {
             selectedTeamIndex = index;
         } else {
             if (selectedTeamIndex !== index) {
-                // Troca os times de lugar
                 const temp = globalTeams[selectedTeamIndex];
                 globalTeams[selectedTeamIndex] = globalTeams[index];
                 globalTeams[index] = temp;
@@ -295,18 +267,38 @@ function setTeamColor(index, color) {
 
     function removePlayerInTeam(tIdx, pIdx) {
         globalTeams[tIdx].splice(pIdx, 1);
+        // Remove o time se ele ficar vazio e não for um dos dois primeiros
+        if(globalTeams[tIdx].length === 0 && globalTeams.length > 2) {
+            globalTeams.splice(tIdx, 1);
+        }
         renderMatches();
     }
 
     function addNewPlayerToResult() {
-        const n = prompt("Nome do Jogador:");
-        if(n) { globalTeams[0].push(n); renderMatches(); }
+        const n = prompt("Nome do Jogador Extra:");
+        if(!n) return;
+        const size = parseInt(document.getElementById('players-per-team').value);
+        let added = false;
+        for(let i=0; i < globalTeams.length; i++) {
+            if(globalTeams[i].length < size) {
+                globalTeams[i].push(n);
+                added = true;
+                break;
+            }
+        }
+        if(!added) {
+            let newTeam = [n];
+            newTeam.color = "";
+            globalTeams.push(newTeam);
+        }
+        renderMatches();
     }
 
     function clearAllPlayers() {
         if(confirm("Limpar tudo?")) { localStorage.removeItem('futebol_players'); loadFromLocal(); }
     }
-</script>
+    </script>
 </body>
 </html>
+
 
